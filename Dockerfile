@@ -23,8 +23,31 @@ RUN mkdir /usr/bwa && \
     make && \
     cp bwa /usr/local/bin
 
+# Install python requirements
+ADD requirements.txt /usr/bwa
+RUN pip install -r /usr/bwa/requirements.txt && rm /usr/bwa/requirements.txt
+
+# Install Samtools
+RUN cd /usr/local/bin && \
+    wget https://github.com/samtools/samtools/releases/download/1.7/samtools-1.7.tar.bz2 && \
+    tar xvf samtools-1.7.tar.bz2 && \
+    cd samtools-1.7 && \
+    ./configure --without-curses --disable-lzma --disable-bz2 --prefix=/usr/local/bin && \
+    make && \
+    make install && \
+    ln -s $PWD/samtools /usr/local/bin/
+
+# Install the SRA toolkit
+RUN cd /usr/local/bin && \
+    wget -q https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.8.2/sratoolkit.2.8.2-ubuntu64.tar.gz && \
+    tar xzf sratoolkit.2.8.2-ubuntu64.tar.gz && \
+    ln -s /usr/local/bin/sratoolkit.2.8.2-ubuntu64/bin/* /usr/local/bin/ && \
+    rm sratoolkit.2.8.2-ubuntu64.tar.gz
+
 # Add the run script to the PATH
 ADD run.py /usr/local/bin/
+ADD . /usr/bwa/
+ENV PYTHONPATH="/usr/bwa:${PYTHONPATH}"
 
 # Run tests and then remove the folder
 ADD tests /usr/bwa/tests
