@@ -135,6 +135,7 @@ def run_bwa(
     run_cmds([
         "samtools",
         "view",
+        "-F", "4",  # Remove unmapped reads
         "-o",
         unsorted_bam_fp,
         sam_fp
