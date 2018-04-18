@@ -6,15 +6,15 @@ import time
 import shutil
 import logging
 import argparse
-from bwa_helpers import run_cmds
-from bwa_helpers import combine_fastqs
-from bwa_helpers import return_results
-from bwa_helpers import exit_and_clean_up
-from bwa_helpers import count_fastq_reads
-from bwa_helpers import count_fasta_reads
-from bwa_helpers import get_reads_from_url
-from bwa_helpers import get_reference_database
-from bwa_helpers import set_up_sra_cache_folder
+from .bwa_helpers import run_cmds
+from .bwa_helpers import combine_fastqs
+from .bwa_helpers import return_results
+from .bwa_helpers import exit_and_clean_up
+from .bwa_helpers import count_fastq_reads
+from .bwa_helpers import count_fasta_reads
+from .bwa_helpers import get_reads_from_url
+from .bwa_helpers import get_reference_database
+from .bwa_helpers import set_up_sra_cache_folder
 
 
 def run_bwa(

@@ -18,9 +18,9 @@ test_image(){
 		$img_tag \
 			run.py \
             --input /share/SRR6757151.100k.fastq.gz \
-            --sample-name SRR6757151.100k \
+            --sample-name SRR6757151.100k.NC_002695.1 \
             --ref-db /share/NC_002695.1.fasta \
-            --output-folder /share/ \
+            --output-folder /share/output \
             --temp-folder /share/ \
             --threads 1
 
