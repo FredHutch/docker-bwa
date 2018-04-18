@@ -24,6 +24,19 @@ test_image(){
             --temp-folder /share/ \
             --threads 1
 
+	echo "TESTING SMALL S3 FILE"
+
+	docker run \
+		--rm \
+		-v ~/.aws/credentials:/root/.aws/credentials \
+		$img_tag \
+			run.py \
+            --input s3://fh-pi-fredricks-d/lab/Sam_Minot/data/test/SRR6757151.100k.fastq.gz \
+            --sample-name SRR6757151.100k.NC_002695.1 \
+            --ref-db s3://fh-pi-fredricks-d/lab/Sam_Minot/data/test/NC_002695.1.fasta \
+            --output-folder s3://fh-pi-fredricks-d/lab/Sam_Minot/data/test/bwa_output \
+            --temp-folder /share/ \
+            --threads 1
 }
 
 test_image $1

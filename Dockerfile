@@ -45,8 +45,8 @@ RUN cd /usr/local/bin && \
     rm sratoolkit.2.8.2-ubuntu64.tar.gz
 
 # Add the run script to the PATH
-ADD run.py /usr/local/bin/
 ADD . /usr/bwa/
+RUN ln -s /usr/bwa/run.py /usr/local/bin/
 ENV PYTHONPATH="/usr/bwa:${PYTHONPATH}"
 
 # Run tests and then remove the folder

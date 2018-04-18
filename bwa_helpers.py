@@ -82,9 +82,16 @@ def get_reference_database(ref_db, temp_folder):
         # Treat the input as a local path
         logging.info("Getting reference database from local path: " + ref_db)
 
-        assert os.path.exists(ref_db)
+        assert os.path.exists(ref_db), "File does not exist: " + ref_db
 
-        local_fp = ref_db
+        # Copy the database to the local temp folder
+        local_fp = os.path.join(
+            temp_folder,
+            ref_db.split('/')[-1]
+        )
+
+        logging.info("Copying {} to {}".format(ref_db, local_fp))
+        run_cmds(["cp", ref_db, local_fp])
 
     if local_fp.endswith(".gz"):
         logging.info("Decompressing reference FASTA")
@@ -294,28 +301,43 @@ def combine_fastqs(fps_in, fp_out):
 
     if len(fps_in) == 1:
         assert os.path.exists(fps_in[0])
-        logging.info("Making a symlink: {} -> {}".format(fps_in[0], fp_out))
-        os.symlink(fps_in[0], fp_out)
+        if fps_in[0].endswith(".gz"):
+            logging.info("Decompressing {} to {}".format(fps_in[0], fp_out))
+            run_cmds(["gunzip", "-c", fps_in[0]], stdout=fp_out)
+        else:
+            logging.info("Making a symlink: {} -> {}".format(fps_in[0], fp_out))
+            os.symlink(fps_in[0], fp_out)
     else:
         logging.info("Combining {:,} FASTQ files".format(len(fps_in)))
         logging.info("Writing all inputs to {}".format(fp_out))
         with open(fp_out, "wt") as fo:
             for fp_ix, f in enumerate(fps_in):
                 logging.info("Adding {} to {}".format(f, fp_out))
-                with open(f, "rt") as fi:
-                    for line_ix, line in enumerate(fi):
-                        # Add a file index to the header
-                        # In case there are two files with the same headers
-                        mod = line_ix % 4
-                        if mod == 0 or mod == 2:
-                            line = line.rstrip("\n")
-                            fo.write("{}-{}\n".format(line, fp_ix))
-                        else:
-                            fo.write(line)
+                if f.endswith(".gz"):
+                    fi = gzip.open(f, "rt")
+                else:
+                    fi = open(f, "rt")
+
+                for line_ix, line in enumerate(fi):
+                    # Add a file index to the header
+                    # In case there are two files with the same headers
+                    mod = line_ix % 4
+                    if mod == 0 or mod == 2:
+                        line = line.rstrip("\n")
+                        fo.write("{}-{}\n".format(line, fp_ix))
+                    else:
+                        fo.write(line)
+
+                fi.close()
 
 
 def return_results(out, read_prefix, output_folder, temp_folder, bam_fp):
     """Write out the final results as a JSON object."""
+
+    # Make sure the output folder ends with a trailing slash
+    if output_folder.endswith("/") is False:
+        output_folder = output_folder + "/"
+
     # Make a temporary file
     temp_fp = os.path.join(temp_folder, read_prefix + '.json')
     with open(temp_fp, 'wt') as fo:
@@ -350,5 +372,7 @@ def return_results(out, read_prefix, output_folder, temp_folder, bam_fp):
         os.unlink(bam_fp)
     else:
         # Copy to local folder
+        # Make sure the folder exists
+        assert os.path.exists(output_folder), "Output folder does not exist"
         run_cmds(['mv', temp_fp, output_folder])
         run_cmds(['mv', bam_fp, output_folder])
