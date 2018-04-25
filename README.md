@@ -1,6 +1,8 @@
 # Docker-BWA
 Docker image running BWA
 
+[![Docker Repository on Quay](https://quay.io/repository/fhcrc-microbiome/bwa/status "Docker Repository on Quay")](https://quay.io/repository/fhcrc-microbiome/bwa)
+
 In addition to BWA, this image contains a wrapper script that 
 executes the following tasks in a single command:
 
