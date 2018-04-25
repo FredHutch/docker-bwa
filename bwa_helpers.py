@@ -77,6 +77,17 @@ def get_reference_database(ref_db, temp_folder):
             local_fp
         ])
 
+    elif ref_db.startswith("ftp://"):
+        # Get the file via WGET
+
+        # Save the database to the local temp folder
+        local_fp = os.path.join(
+            temp_folder,
+            ref_db.split('/')[-1]
+        )
+        run_cmds(["wget", "-O", local_fp, ref_db])
+
+        assert os.path.exists(local_fp)
 
     else:
         # Treat the input as a local path
@@ -95,13 +106,10 @@ def get_reference_database(ref_db, temp_folder):
 
     if local_fp.endswith(".gz"):
         logging.info("Decompressing reference FASTA")
-        with open(local_fp[:-3], "wt") as fo:
-            run_cmds([
-                "gunzip",
-                "-c",
-                local_fp
-            ], 
-            stdout=fo)
+        run_cmds([
+            "gunzip",
+            local_fp
+        ])
         local_fp = local_fp[:-3]
 
     return local_fp
