@@ -5,7 +5,7 @@ MAINTAINER sminot@fredhutch.org
 RUN apt update && \
     apt-get install -y build-essential wget unzip python2.7 \
     python-dev git python-pip bats awscli curl \
-    libcurl4-openssl-dev make gcc zlib1g-dev
+    libcurl4-openssl-dev make gcc zlib1g-dev python3-pip
 
 # Set the default langage to C
 ENV LC_ALL C
@@ -13,6 +13,9 @@ ENV LC_ALL C
 # Use /share as the working directory
 RUN mkdir /share
 WORKDIR /share
+
+# Add the bucket command wrapper, used to run code via sciluigi
+RUN pip3 install bucket_command_wrapper==0.2.0 
 
 # Install BWA
 RUN mkdir /usr/bwa && \
