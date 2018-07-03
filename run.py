@@ -15,6 +15,7 @@ from bwa_helpers import count_fasta_reads
 from bwa_helpers import get_reads_from_url
 from bwa_helpers import get_reference_database
 from bwa_helpers import set_up_sra_cache_folder
+from bwa_helpers import count_aliged_reads
 
 
 def run_bwa(
@@ -157,6 +158,11 @@ def run_bwa(
     n_reads = count_fastq_reads(read_fp)
     logging.info("Reads in input file: {:,}".format(n_reads))
 
+    # Count the number of aligned reads
+    logging.info("Counting the number of aligned reads")
+    aligned_reads = count_aliged_reads(bam_fp)
+    logging.info("Aligned reads: {:,}".format(aligned_reads))
+
     # Read in the logs
     logging.info("Reading in the logs")
     logs = open(log_fp, 'rt').readlines()
@@ -173,6 +179,7 @@ def run_bwa(
         "ref_db_url": ref_db,
         "n_refs": n_refs,
         "total_reads": n_reads,
+        "aligned_reads": aligned_reads,
         "time_elapsed": time.time() - start_time,
         "threads": threads
     }

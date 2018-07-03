@@ -265,6 +265,17 @@ def get_sra(accession, temp_folder):
     return local_path
 
 
+def count_aliged_reads(fp):
+    assert fp.endswith(".bam"), "Must specify BAM file"
+    p = subprocess.Popen(
+        ["samtools", "view", fp],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
+    stdout, stderr = p.communicate()
+    return len(stdout.split("\n"))
+
+
 def count_fasta_reads(fp):
     n = 0
     if fp.endswith(".gz"):
